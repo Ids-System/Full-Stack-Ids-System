@@ -6,23 +6,23 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer,autoincrement=True,primary_key=True)
     username = Column(String,nullable=False,unique=True)
+    email = Column(String,nullable=False)
     password = Column(String,nullable=False)
-    role = Column(String,nullable=False)
 
 
-def add_user(name,password,role):
+def add_user(name,password,email):
     with SessionLocal() as db:
         user = User(
             username = name,
             password = password,
-            role = role
+            email = email
         )
         db.add(user)
         db.commit()
 
 
-def get_user_byname(name):
+def get_user_byemail(email):
     with SessionLocal() as db:
-        user = db.query(User).filter(User.username == name).first()
+        user = db.query(User).filter(User.email == email).first()
         return user
     
