@@ -32,4 +32,7 @@ def get_attacksbydate(date):
         attacks =  db.query(Attack_Days).filter(Attack_Days.Date == Date).first()
         if attacks:
             return attacks
+
+
+
             

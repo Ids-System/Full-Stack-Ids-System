@@ -1,6 +1,7 @@
-from sqlalchemy import Column,String,Integer
+from sqlalchemy import Column,String,Integer,DateTime,func
 from sqlalchemy.dialects.postgresql import INET
 from db.database import SessionLocal,Base
+
 
 class AttackIP(Base):
     __tablename__ = "ips"
@@ -9,6 +10,7 @@ class AttackIP(Base):
     destination_ip = Column(INET,nullable=False)
     protocol = Column(String(10),nullable=False)
     port = Column(Integer,nullable=False)
+    timestamp = Column(DateTime,default=func.now(),nullable=False)
 
 
 def get_ips():

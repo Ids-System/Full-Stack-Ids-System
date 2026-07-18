@@ -8,6 +8,7 @@ class User(Base):
     username = Column(String,nullable=False,unique=True)
     email = Column(String,nullable=False)
     password = Column(String,nullable=False)
+    role = Column(String(20),nullable=False,default="observer")
 
 
 def add_user(name,password,email):
@@ -26,3 +27,10 @@ def get_user_byemail(email):
         user = db.query(User).filter(User.email == email).first()
         return user
     
+def delete_user(email):
+    with SessionLocal() as db:
+        user = db.query(User).filter(User.email == email).first()
+        if user:
+            db.delete(User)
+            db.commit()
+            
