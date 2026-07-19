@@ -10,6 +10,19 @@ class User(Base):
     password = Column(String,nullable=False)
     role = Column(String(20),nullable=False,default="observer")
 
+def get_users():
+    with SessionLocal() as db:
+        users = db.query(User).all()
+        return users
+
+
+def get_user_by_details(email = None,usrid = None):
+    with SessionLocal() as db:
+        if email is not None:
+            user = db.query(User).filter(User.email == email).first()
+        elif id is not None:
+            user = db.query(User).filter(User.id == usrid).first()
+        return user
 
 def add_user(name,password,email):
     with SessionLocal() as db:
@@ -22,11 +35,16 @@ def add_user(name,password,email):
         db.commit()
 
 
-def get_user_byemail(email):
+def update_password(usrid,new_password):
     with SessionLocal() as db:
-        user = db.query(User).filter(User.email == email).first()
-        return user
+        user = db.query(User).filter(User.id == usrid).first()
+        if user:
+            user.password = new_password
+            db.commit()
+            return new_password
     
+
+
 def delete_user(email):
     with SessionLocal() as db:
         user = db.query(User).filter(User.email == email).first()
