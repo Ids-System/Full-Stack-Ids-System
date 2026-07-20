@@ -11,8 +11,6 @@ engine = create_engine(url=DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine)
 
-class Base(declarative_base):
-    pass
-
+Base = declarative_base()
 
 
