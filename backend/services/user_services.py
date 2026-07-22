@@ -27,11 +27,12 @@ def get_user_details(user_id):
         raise HTTPException(500,detail="Internal Server Error")
 
 
-def update_user_password(user_id,old_pass,new_pass):
+def update_user_password(user_id,data):
+    old_pass,new_pass = data.old_password,data.new_password
     is_auser = get_user_by_details(usrid=user_id)
     if is_auser:
         old_password = is_auser.password
-        is_valid = bcrypt.checkpw(old_password,old_pass.encode("utf-8"))
+        is_valid = bcrypt.checkpw(old_pass.encode("utf-8"),old_password.encode("utf-8"))
         if is_valid:
             res = update_password(user_id,new_pass)
             if res : 
