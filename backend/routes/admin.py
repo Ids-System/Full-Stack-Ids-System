@@ -24,3 +24,17 @@ def updaterole(data :UpdateRole, isadmin = Depends(is_admin)):
 def deleteuser(data :DeleteUser ,isadmin = Depends(is_admin)):
     res = removeuser(isadmin,data)
     return res
+
+@admin.delete('/attack-history')
+def delete_ips():
+    return {"message" : "delete ips"}
+
+
+@admin.delete('/block-ips/{id}')
+def remove_ip():
+    return {"message" : "ip removed from block list"}
+
+
+@admin.get('/export')
+def export_report():
+    return {"message" : "export eraly report"}
