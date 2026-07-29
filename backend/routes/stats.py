@@ -2,10 +2,10 @@ from fastapi import APIRouter
 
 dailyattacks = APIRouter(prefix="/daily-attacks")
 
+
 @dailyattacks.get('/')
 def get_noofattacks():
     return {"message" : "no of attacks"}
-
 
 @dailyattacks.post('/')
 def add_newattacks():

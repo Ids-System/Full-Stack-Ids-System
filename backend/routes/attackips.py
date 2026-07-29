@@ -13,5 +13,3 @@ def add_ip():
 @attack_ip.delete('/')
 def delete_ips():
     return {"message" : "delete ips"}
-
-

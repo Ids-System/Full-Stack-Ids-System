@@ -10,3 +10,8 @@ def get_current_user(data= Depends(get_token_payload)):
         return None
 
 
+def is_admin(data = Depends(get_token_payload)):
+    role = data["role"]
+    if role == "admin":
+        return True
+    

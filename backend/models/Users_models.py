@@ -33,6 +33,7 @@ def add_user(name,password,email):
         )
         db.add(user)
         db.commit()
+        return True
 
 
 def update_password(usrid,new_password):
@@ -44,6 +45,12 @@ def update_password(usrid,new_password):
             return new_password
     
 
+def update_role(email,new_role):
+    with SessionLocal() as db:
+        user = db.query(User).filter(User.email == email).first()
+        user.role = new_role
+        db.commit()
+        return True
 
 def delete_user(email):
     with SessionLocal() as db:
@@ -51,4 +58,5 @@ def delete_user(email):
         if user:
             db.delete(User)
             db.commit()
+            return True
             

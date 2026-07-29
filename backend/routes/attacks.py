@@ -6,7 +6,6 @@ attacks = APIRouter(prefix="/attacks")
 def get_attacks():
     return {"message" : "all attacks"}
 
-
 @attacks.post('/')
 def add_attacks():
     return {"message" : "attacks added"}
