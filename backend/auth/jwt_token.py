@@ -39,7 +39,7 @@ def create_refresh_token(user_id):
 
     return token
 
-def decode_token(authorization : str = Header(None)):
+def get_token_payload(authorization : str = Header(None)):
     if authorization is None:
         raise HTTPException(
             401,detail="Authorization Token Missing"

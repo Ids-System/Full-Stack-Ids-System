@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from datetime import datetime, UTC
 from models.Users_models import get_user_by_details,update_password
 from models.token_models import add_token,get_token
-from auth.jwt_token import create_access_token,create_refresh_token,decode_token
+from auth.jwt_token import create_access_token,create_refresh_token,get_token_payload
 import bcrypt
 
 def login_service(data):
@@ -46,24 +46,16 @@ def update_user_password(user_id,data):
         else:
             raise HTTPException(401,detail="Invalid Credentials")
     else:
-        raise HTTPException(401,detail="No User Found ")    
+        raise HTTPException(404,detail="No User Found")    
 
 
-def refresh_token(authorization):
-    if authorization is None:
-        raise HTTPException(
-            401,detail="Authorization Token Missing"
-        )
-    token = authorization.replace("Bearer ", "")
-    payload = decode_token(token)
-    if payload is None:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    jti = payload.get("jti")
-    not_valid_token = get_token(jti)
-    if not_valid_token:
-        raise HTTPException(401,detail="Token has been revoked")
+def refresh_token(payload):
     if payload["type"] != "refresh":
-        raise HTTPException(401,detail="Invalid Token Type")
+            raise HTTPException(401,detail="Invalid Token Type")
+    jti = payload.get("jti")
+    is_blacklisted = get_token(jti)
+    if is_blacklisted :
+        raise HTTPException(401,detail="Token has been revoked")
        
     new_token = create_access_token(payload.get("userid"))
     return {"access_token" : new_token}
@@ -74,4 +66,6 @@ def user_logout(token):
     exp = token.get("exp")
     res = add_token(jti,exp)
     if res:
-        return {"message" : "user logout successfully"} 
+        return {"message" : "user logout successfully"}
+    else:
+        raise HTTPException(500,detail="Internal Server Error")
