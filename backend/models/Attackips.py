@@ -18,8 +18,7 @@ def get_ips():
        packets = db.query(AttackIP).all()
        return packets 
 
-def add_ips(sip,dip,protocol,port):
-    with SessionLocal() as db:
+def add_ips(db,sip,dip,protocol,port):
         ip = AttackIP(
             source_ip = sip,
             destination_ip = dip,
@@ -27,7 +26,7 @@ def add_ips(sip,dip,protocol,port):
             port = port
         )
         db.add(ip)
-        db.commit()
+        db.flush()
         db.refresh(ip)
         return ip
 

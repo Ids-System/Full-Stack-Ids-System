@@ -17,14 +17,15 @@ def get_blocked_ips():
         return bips
     
 
-def add_blockip(ip,attack):
-    with SessionLocal() as db:
+def add_blockip(db,ip,attack):
         ip = Blockedips(
             ip = ip,
             Attack = attack
         )
         db.add(ip)
-        db.commit()
+        db.flush()
+        db.refresh(ip)
+        return ip
 
 
 def remove_ip(ipid):

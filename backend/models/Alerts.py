@@ -6,9 +6,9 @@ class Alerts(Base):
     __tablename__ = "alerts"
     alert_id = Column(Integer,autoincrement=True,primary_key=True)
     Attackid = Column(Integer,ForeignKey("attacks.attack_id"))
-    severnity = Column(String,nullable = False)
+    severity = Column(String,nullable = False)
     timestamp = Column(DateTime,default=func.now(),nullable=False)
-    status = Column(String,nullable=False)
+    
 
 
 def get_alerts():
@@ -17,15 +17,15 @@ def get_alerts():
         return alerts
     
 
-def add_alerts(attackid,severnity,status):
-    with SessionLocal() as db:
+def add_alerts(db,attackid,severity):
         alert = Alerts(
             Attackid = attackid,
-            severnity = severnity,
-            status = status
+            severity = severity,
         )
         db.add(alert)
-        db.commit()
+        db.flush()
+        db.refresh(alert)
+        return alert
 
 def delete_alerts(alert_id):
     with SessionLocal() as db:
