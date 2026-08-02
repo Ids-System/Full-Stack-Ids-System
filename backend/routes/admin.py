@@ -1,7 +1,9 @@
 from fastapi import APIRouter,Depends
 from dependencies.auth import is_admin
 from services.admin_services  import get_all_users,add_new_user,update_user_role,removeuser
+from services.admin_services import table_cleanups
 from schemas.users_schemas import AddUser,UpdateRole,DeleteUser
+
 
 admin = APIRouter(prefix="/admin")
 
@@ -26,13 +28,8 @@ def deleteuser(data :DeleteUser ,isadmin = Depends(is_admin)):
     return res
 
 @admin.delete('/attack-history')
-def delete_ips():
-    return {"message" : "delete ips"}
-
-
-@admin.delete('/block-ips/{id}')
-def remove_ip():
-    return {"message" : "ip removed from block list"}
+def delete_ips(isadmin = Depends(is_admin)):
+    return table_cleanups(is_admin)
 
 
 @admin.get('/export')

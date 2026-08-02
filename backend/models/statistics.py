@@ -25,10 +25,9 @@ def increment_count(db,date):
     attack.no_of_attacks +=1
     db.flush()
 
-def remove_all_columns():
-    with SessionLocal() as db:
-        db.query(AttackDays).delete()
-        db.commit()
+def clear_attack_days(db):
+    db.query(AttackDays).delete()
+    db.flush()
 
 def get_attacksdays():
     with SessionLocal() as db:

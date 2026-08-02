@@ -28,9 +28,7 @@ def add_blockip(db,ip,attack):
         return ip
 
 
-def remove_ip(ipid):
-    with SessionLocal() as db:
-        ip = db.query(Blockedips).filter(Blockedips.ip_id == ipid).first()
-        if ip:
-            db.delete(ip)
+def clear_blockedip(db):
+    db.query(Blockedips).delete()
+    db.flush()
             

@@ -5,7 +5,7 @@ from sqlalchemy import Column,String,Integer,ForeignKey,func,select,Date
 class Attacks(Base):
     __tablename__ = "attacks"
     attack_id = Column(Integer,autoincrement=True,primary_key=True)
-    ip_id = Column(Integer,ForeignKey("ips.ip_id"),nullable=False)
+    ip_id = Column(Integer,ForeignKey("ips.ip_id",ondelete="CASCADE"),nullable=False)
     attack = Column(String,nullable=False)
     description = Column(String,nullable=False)
     date = Column(Date, default=func.now(), nullable=False)
@@ -34,9 +34,7 @@ def add_attack(db,ip_id,attack,description):
         db.refresh(attack)
         return attack
 
-def delete_attacks(attack_id):
-    with SessionLocal() as db:
-        aip = db.query(Attacks.attack_id == attack_id).first()
-        db.delete(aip)
-        db.commit(aip)
+def clear_attacks(db):
+    db.query(Attacks).delete()
+    db.flush()
         

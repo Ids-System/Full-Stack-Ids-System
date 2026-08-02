@@ -10,14 +10,15 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-def create_access_token(user_id):
+def create_access_token(user_id,role):
     if SECRET_KEY is None:
         raise ValueError("Secret Key Not Configured")
     payload = {
         "userid" :user_id,
         "exp" : datetime.now(UTC)+timedelta(minutes=30),
         "type" : "access",
-        "jti" : str(uuid.uuid4())
+        "jti" : str(uuid.uuid4()),
+        "role" : role
     }
 
     token = jwt.encode(payload,key=SECRET_KEY,algorithm=os.getenv("ALGORITHM"))
@@ -25,14 +26,15 @@ def create_access_token(user_id):
     return token
 
 
-def create_refresh_token(user_id):
+def create_refresh_token(user_id,role):
     if SECRET_KEY is None:
         raise ValueError("Secret Key Not Configured")
     payload = {
         "userid" :user_id,
         "exp" : datetime.now(UTC)+timedelta(days=30),
         "type" : "refresh",
-        "jti" : str(uuid.uuid4())
+        "jti" : str(uuid.uuid4()),
+        "role" : role
     }
 
     token = jwt.encode(payload,key=SECRET_KEY,algorithm=os.getenv("ALGORITHM"))

@@ -31,9 +31,6 @@ def add_ips(db,sip,dip,protocol,port):
         return ip
 
 
-def delete_ip(ipid):
-    with SessionLocal() as db:
-        ip = db.query(AttackIP).filter(AttackIP.ip_id == ipid).first()
-        if ip:
-            db.delete(ip)
-            db.commit()
+def clear_attackips(db):
+    db.query(AttackIP).delete()
+    db.flush()

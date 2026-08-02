@@ -5,7 +5,7 @@ from datetime import datetime
 class Alerts(Base):
     __tablename__ = "alerts"
     alert_id = Column(Integer,autoincrement=True,primary_key=True)
-    Attackid = Column(Integer,ForeignKey("attacks.attack_id"))
+    Attackid = Column(Integer,ForeignKey("attacks.attack_id",ondelete="CASCADE"))
     severity = Column(String,nullable = False)
     timestamp = Column(DateTime,default=func.now(),nullable=False)
     
@@ -27,10 +27,6 @@ def add_alerts(db,attackid,severity):
         db.refresh(alert)
         return alert
 
-def delete_alerts(alert_id):
-    with SessionLocal() as db:
-        alerts = db.query(Alerts.alert_id == alert_id).first()
-        if alerts:
-            db.delete(alerts)
-            db.commit()
-
+def clear_alerts(db):
+    db.query(Alerts).delete()
+    db.flush()

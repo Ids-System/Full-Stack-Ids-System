@@ -13,8 +13,9 @@ def login_service(data):
         is_valid = bcrypt.checkpw(password.encode("utf-8"),stored_password.encode("utf-8"))
         if is_valid:
             user_id = is_auser.id
-            access_token = create_access_token(user_id)
-            refresh_token = create_refresh_token(user_id)
+            role = is_auser.role
+            access_token = create_access_token(user_id,role)
+            refresh_token = create_refresh_token(user_id,role)
             return {"access_token" : access_token,"refresh_token":refresh_token}
         else:
             raise HTTPException(401,detail="Wrong Credentials")
