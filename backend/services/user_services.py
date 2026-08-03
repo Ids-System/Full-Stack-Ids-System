@@ -57,8 +57,8 @@ def refresh_token(payload):
     is_blacklisted = get_token(jti)
     if is_blacklisted :
         raise HTTPException(401,detail="Token has been revoked")
-       
-    new_token = create_access_token(payload.get("userid"))
+    role = payload.get("role")
+    new_token = create_access_token(payload.get("userid"),role)
     return {"access_token" : new_token}
 
 
