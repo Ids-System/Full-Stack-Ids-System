@@ -34,11 +34,6 @@ def get_attacksdays():
         attacks = db.query(AttackDays).all()
         return attacks
 
-def get_attacksbydate(date):
-    with SessionLocal() as db:
-        attacks =  db.query(AttackDays).filter(AttackDays.Date == Date).first()
-        if attacks:
-            return attacks
 
 
 
