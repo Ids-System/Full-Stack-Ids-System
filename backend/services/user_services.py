@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from datetime import datetime, UTC
 from models.Users_models import get_user_by_details,update_password
 from models.token_models import add_token,get_token
 from auth.jwt_token import create_access_token,create_refresh_token,get_token_payload
@@ -16,7 +15,7 @@ def login_service(data):
             role = is_auser.role
             access_token = create_access_token(user_id,role)
             refresh_token = create_refresh_token(user_id,role)
-            return {"access_token" : access_token,"refresh_token":refresh_token}
+            return  access_token,refresh_token
         else:
             raise HTTPException(401,detail="Wrong Credentials")
     else:
@@ -59,7 +58,7 @@ def refresh_token(payload):
         raise HTTPException(401,detail="Token has been revoked")
     role = payload.get("role")
     new_token = create_access_token(payload.get("userid"),role)
-    return {"access_token" : new_token}
+    return new_token
 
 
 def user_logout(token):
