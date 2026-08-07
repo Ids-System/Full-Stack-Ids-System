@@ -8,8 +8,8 @@ class Connections():
     def remove_socket(self,user_id):
         self.active_connections.pop(user_id)
 
-    def broadcast_msg(self,attack):
+    async def broadcast_msg(self,attack):
         for ws in self.active_connections.values():
-            ws.send_json(attack)
+            await ws.send_json(attack)
 
 manager = Connections()

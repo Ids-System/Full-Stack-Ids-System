@@ -4,6 +4,6 @@ from schemas.engine_report_schema import Report
 engine = APIRouter(prefix="/engine")
 
 @engine.post('/report')
-def report(data:Report):
-    return proces_report(True,data)
+async def report(data:Report):
+    return await proces_report(True,data)
 

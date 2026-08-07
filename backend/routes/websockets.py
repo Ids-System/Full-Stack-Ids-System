@@ -20,5 +20,3 @@ async def create_websocket(websocket : WebSocket):
         await websocket.receive_text()
     except WebSocketDisconnect:
         manager.remove_socket(is_loggedin)
-        raise HTTPException(1008,detail="Invalid or expired JWT")
-

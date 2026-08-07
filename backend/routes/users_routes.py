@@ -38,13 +38,13 @@ def change_password(data:NewPassword,user_id = Depends(get_current_user)):
 
 
 @users.post('/refresh')
-def refreshtoken(response:Response,payload = Depends(get_token_payload)):
+def refreshtoken(response:Response,payload = Depends(get_refresh_payload)):
     access_token = refresh_token(payload)
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
     return {
