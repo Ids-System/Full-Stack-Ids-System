@@ -11,6 +11,7 @@ class LoginUser():
         self.id = 1
         self.email = "aizen@gmail.com"
         self.password = "Mf#@9346954045"
+        self.role = "admin"
 
 class Data():
     def __init__(self):
@@ -31,10 +32,7 @@ def test_login():
          mock_refresh_token.return_value = "fasdfasdfw3wqt546745udyjfjfg.63456346w.t6.56347.74"
 
          result = login_service(Data())
-         assert result == {
-            "access_token": "fasdfasdfw3wqt546745udyjfjfg.63456346w.t6.56347.74",
-            "refresh_token": "fasdfasdfw3wqt546745udyjfjfg.63456346w.t6.56347.74"
-            }
+         assert result ==  ("fasdfasdfw3wqt546745udyjfjfg.63456346w.t6.56347.74","fasdfasdfw3wqt546745udyjfjfg.63456346w.t6.56347.74")
 
 def test_login_with_wrong_credentials():
 
@@ -172,7 +170,7 @@ def test_refresh_token():
 
             result = refresh_token(refreshtoken)
 
-            assert result == {"access_token": "fasdft54y.y.43uy64w3ju3.75.j7eszy"}
+            assert result == "fasdft54y.y.43uy64w3ju3.75.j7eszy"
 
 
 def test_refresh_token_invalid_type():
