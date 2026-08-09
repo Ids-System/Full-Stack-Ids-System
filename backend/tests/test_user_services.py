@@ -41,8 +41,10 @@ def test_login_with_wrong_credentials():
          mock_get_user.return_value = LoginUser()
          mock_check.return_value = False
 
-         with pytest.raises(HTTPException):
+         with pytest.raises(HTTPException) as exc:
             login_service(Data())
+         assert exc.value.status_code == 401
+         assert exc.value.detail == "Wrong Credentials"
 
 def test_login_with_user_not_found():
      with patch("services.user_services.get_user_by_details") as mock_get_user:
@@ -112,8 +114,8 @@ def test_upate_password_without_user():
 
         with pytest.raises(HTTPException) as exc:
             update_user_password(1,Password())
-            assert exc.value.status_code == 404
-            assert exc.value.detail == "No User Found"
+        assert exc.value.status_code == 404
+        assert exc.value.detail == "No User Found"
 
 
 def test_update_password_with_wrong_credentials():
@@ -124,8 +126,8 @@ def test_update_password_with_wrong_credentials():
 
             with pytest.raises(HTTPException) as exc:
                 update_user_password(1,Password())
-                assert exc.value.status_code == 401
-                assert exc.value.detail == "Invalid Credentials"
+            assert exc.value.status_code == 401
+            assert exc.value.detail == "Invalid Credentials"
 
 def test_update_password_with_failedtosave():
     with    patch("services.user_services.get_user_by_details") as mock_getuser,\
@@ -140,8 +142,8 @@ def test_update_password_with_failedtosave():
 
                     with pytest.raises(HTTPException) as exc:
                                     update_user_password(1,Password())
-                                    assert exc.value.status_code == 500
-                                    assert exc.value.detail == "Internal Server Errror"
+                    assert exc.value.status_code == 500
+                    assert exc.value.detail == "Internal Server Errror"
 
 
 #Refresh Token Test
@@ -180,8 +182,8 @@ def test_refresh_token_invalid_type():
 
             with pytest.raises(HTTPException) as exc:
                  refresh_token(refreshtoken)
-                 assert exc.value.status_code == 401
-                 assert  exc.value.detail == "Invalid Token Type"
+            assert exc.value.status_code == 401
+            assert  exc.value.detail == "Invalid Token Type"
 
 def test_refersh_token_blacklisted():
      with patch("services.user_services.get_token") as mock_get_token  :
@@ -189,8 +191,8 @@ def test_refersh_token_blacklisted():
 
            with pytest.raises(HTTPException) as exc:
                 refresh_token(refreshtoken)
-                assert exc.value.status_code == 401
-                assert exc.value.detail == "Token has been revoked"
+           assert exc.value.status_code == 401
+           assert exc.value.detail == "Invalid Token Type"
 
 #Logout Test
 
@@ -215,6 +217,6 @@ def test_logout_failedtoadd():
 
           with pytest.raises(HTTPException) as exc:
                user_logout(token)
-               assert exc.value.status_code == 500
-               assert exc.value.detail == "Internal Server Error"
+          assert exc.value.status_code == 500
+          assert exc.value.detail == "Internal Server Error"
           

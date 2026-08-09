@@ -38,28 +38,27 @@ class NumberedCanvas(canvas.Canvas):
     def draw_page_decorations(self, page_count):
         self.saveState()
         
-        # Header
         self.setFont("Helvetica-Bold", 8)
-        self.setFillColor(colors.HexColor("#1E293B")) # Slate-800
+        self.setFillColor(colors.HexColor("#1E293B")) 
         self.drawString(54, 755, "INTRUSION DETECTION SYSTEM (IDS) SECURITY REPORT")
         self.setFont("Helvetica", 8)
-        self.setFillColor(colors.HexColor("#64748B")) # Slate-500
+        self.setFillColor(colors.HexColor("#64748B")) 
         self.drawRightString(558, 755, "CONFIDENTIAL / INTERNAL ONLY")
         self.setLineWidth(0.75)
-        self.setStrokeColor(colors.HexColor("#E2E8F0")) # Slate-200
+        self.setStrokeColor(colors.HexColor("#E2E8F0")) 
         self.line(54, 747, 558, 747)
+
         
-        # Footer
         self.setFont("Helvetica-Bold", 8)
-        self.setFillColor(colors.HexColor("#EF4444")) # Crimson red for classified tag
+        self.setFillColor(colors.HexColor("#EF4444")) 
         self.drawString(54, 35, "RESTRICTED ACCESS")
         self.setFont("Helvetica", 8)
-        self.setFillColor(colors.HexColor("#64748B")) # Slate-500
+        self.setFillColor(colors.HexColor("#64748B")) 
         self.drawString(160, 35, "|   Automated Security Logs Analysis")
         page_text = f"Page {self._pageNumber} of {page_count}"
         self.drawRightString(558, 35, page_text)
         self.setLineWidth(0.75)
-        self.setStrokeColor(colors.HexColor("#E2E8F0")) # Slate-200
+        self.setStrokeColor(colors.HexColor("#E2E8F0")) 
         self.line(54, 47, 558, 47)
         
         self.restoreState()
@@ -70,9 +69,9 @@ def draw_visual_bar(percentage, width=100, height=8, fill_hex="#3B82F6"):
     Draws a clean, inline visual progress bar for data breakdown tables.
     """
     d = Drawing(width, height)
-    # Background track
+    
     d.add(Rect(0, 0, width, height, fillColor=colors.HexColor("#F1F5F9"), strokeColor=None))
-    # Fill level
+    
     fill_w = max(1, int(width * (min(percentage, 100) / 100.0)))
     d.add(Rect(0, 0, fill_w, height, fillColor=colors.HexColor(fill_hex), strokeColor=None))
     return d
@@ -95,7 +94,7 @@ def generate_pdf_report():
 
     story = []
     
-    # Setup styles
+    
     styles = getSampleStyleSheet()
     
     title_style = ParagraphStyle(
@@ -103,7 +102,7 @@ def generate_pdf_report():
         parent=styles['Heading1'],
         fontSize=20,
         leading=24,
-        textColor=colors.HexColor('#0F172A'), # Slate-900
+        textColor=colors.HexColor('#0F172A'), 
         fontName='Helvetica-Bold',
         spaceAfter=4
     )
@@ -113,7 +112,7 @@ def generate_pdf_report():
         parent=styles['Normal'],
         fontSize=9,
         leading=13,
-        textColor=colors.HexColor('#64748B'), # Slate-500
+        textColor=colors.HexColor('#64748B'), 
         spaceAfter=15
     )
     
@@ -122,7 +121,7 @@ def generate_pdf_report():
         parent=styles['Heading2'],
         fontSize=12,
         leading=16,
-        textColor=colors.HexColor('#1E3A8A'), # Deep Navy
+        textColor=colors.HexColor('#1E3A8A'), 
         fontName='Helvetica-Bold',
         spaceBefore=14,
         spaceAfter=6,
@@ -143,7 +142,7 @@ def generate_pdf_report():
         parent=styles['Normal'],
         fontSize=8,
         leading=10,
-        textColor=colors.HexColor('#334155') # Slate-700
+        textColor=colors.HexColor('#334155') 
     )
     
     tb_bold_style = ParagraphStyle(
@@ -157,9 +156,9 @@ def generate_pdf_report():
         parent=styles['Normal'],
         fontSize=8,
         leading=10,
-        textColor=colors.HexColor('#475569'), # Slate-600
+        textColor=colors.HexColor('#475569'), 
         fontName='Helvetica-Bold',
-        alignment=1 # Center
+        alignment=1 
     )
 
     card_value_style = ParagraphStyle(
@@ -167,54 +166,54 @@ def generate_pdf_report():
         parent=styles['Normal'],
         fontSize=18,
         leading=22,
-        textColor=colors.HexColor('#0F172A'), # Slate-900
+        textColor=colors.HexColor('#0F172A'), 
         fontName='Helvetica-Bold',
-        alignment=1 # Center
+        alignment=1 
     )
 
-    # 1. Fetch DB Data
+   
     with SessionLocal() as db:
-        # Counters
+        
         total_attacks = db.query(Attacks).count()
         total_blocked = db.query(Blockedips).count()
         
-        # Severity Counts
+       
         sev_raw = db.query(Alerts.severity, func.count(Alerts.alert_id)).group_by(Alerts.severity).all()
         sev_counts = {r[0]: r[1] for r in sev_raw}
         high_severity = sev_counts.get("High", 0)
         med_severity = sev_counts.get("Medium", 0)
         low_severity = sev_counts.get("Low", 0)
 
-        # Attack types distribution
+        
         attack_types_raw = db.query(
             Attacks.attack, 
             func.count(Attacks.attack_id)
         ).group_by(Attacks.attack).order_by(func.count(Attacks.attack_id).desc()).all()
 
-        # Protocol distribution
+        
         protocol_raw = db.query(
             AttackIP.protocol, 
             func.count(Attacks.attack_id)
         ).join(Attacks, Attacks.ip_id == AttackIP.ip_id).group_by(AttackIP.protocol).order_by(func.count(Attacks.attack_id).desc()).all()
 
-        # Recent Incident Log
+
         recent_incidents = db.query(Alerts, Attacks, AttackIP).join(
             Attacks, Alerts.Attackid == Attacks.attack_id
         ).join(
             AttackIP, Attacks.ip_id == AttackIP.ip_id
         ).order_by(Alerts.timestamp.desc()).limit(15).all()
 
-        # Blocked IP Log
+        
         blocked_list = db.query(Blockedips).order_by(Blockedips.Date_of_block.desc()).limit(10).all()
 
-    # 2. Document Title Block
+    
     story.append(Paragraph("INTRUSION DETECTION SYSTEM", title_style))
     story.append(Paragraph(
         f"Security Intelligence Report  |  Generated on {datetime.now().strftime('%B %d, %Y at %H:%M:%S')}  |  Systems Admin", 
         subtitle_style
     ))
     
-    # 3. Executive Dashboard Cards
+    
     card_table_data = [
         [
             Paragraph("TOTAL INCIDENTS", card_title_style),
@@ -242,10 +241,10 @@ def generate_pdf_report():
     story.append(card_table)
     story.append(Spacer(1, 10))
 
-    # 4. Threat Distribution Section
+    
     story.append(Paragraph("Threat Distributions", section_title_style))
     
-    # Left table: Attack Types
+    
     left_table_data = [[
         Paragraph("Attack Type", th_style), 
         Paragraph("Count", th_style), 
@@ -273,7 +272,7 @@ def generate_pdf_report():
         ('BOTTOMPADDING', (0,0), (-1,-1), 5),
     ]))
 
-    # Right table: Protocols
+    
     right_table_data = [[
         Paragraph("Protocol", th_style), 
         Paragraph("Count", th_style), 
@@ -300,7 +299,7 @@ def generate_pdf_report():
         ('BOTTOMPADDING', (0,0), (-1,-1), 5),
     ]))
 
-    # Combine distributions side-by-side using an outer layout table
+    
     dist_layout = Table([[left_table, "", right_table]], colWidths=[238, 28, 238])
     dist_layout.setStyle(TableStyle([
         ('VALIGN', (0,0), (-1,-1), 'TOP'),
@@ -312,7 +311,7 @@ def generate_pdf_report():
     story.append(dist_layout)
     story.append(Spacer(1, 10))
 
-    # 5. Recent Alerts Table (Wrapped in KeepTogether if appropriate, or let flow naturally)
+    
     story.append(Paragraph("Recent Security Alerts Log", section_title_style))
     alerts_data = [[
         Paragraph("Timestamp", th_style),
@@ -324,7 +323,7 @@ def generate_pdf_report():
     ]]
     
     for alert, attack, ip in recent_incidents:
-        # Style severity
+        
         sev = alert.severity
         if sev == "High":
             sev_text = f"<font color='#EF4444'><b>{sev}</b></font>"
@@ -346,10 +345,10 @@ def generate_pdf_report():
     if len(alerts_data) == 1:
         alerts_data.append([Paragraph("No alerts detected", tb_style), "", "", "", "", ""])
 
-    # Column widths summing to 504 (letter width 612 - margins 108)
+    
     alerts_table = Table(alerts_data, colWidths=[105, 80, 80, 110, 75, 54])
     alerts_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0F172A')), # Darker Slate
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0F172A')),
         ('ALIGN', (0,0), (-1,-1), 'LEFT'),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
         ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor('#F8FAFC')]),
@@ -360,7 +359,7 @@ def generate_pdf_report():
     story.append(alerts_table)
     story.append(Spacer(1, 10))
 
-    # 6. Blocked IPs Table
+    
     story.append(Paragraph("Currently Blocked IP Addresses", section_title_style))
     blocked_data = [[
         Paragraph("Blocked IP Address", th_style),
@@ -389,7 +388,7 @@ def generate_pdf_report():
     ]))
     story.append(blocked_table)
 
-    # Build the document
+    
     doc.build(story, canvasmaker=NumberedCanvas)
     
     buffer.seek(0)
