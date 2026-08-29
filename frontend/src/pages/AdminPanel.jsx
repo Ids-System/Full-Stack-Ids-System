@@ -19,7 +19,7 @@ export default function AdminPanel() {
   const [exporting, setExporting] = useState(false);
 
   const fetchUsers = () => {
-    getAllUsers().then((res) => setUsers(res.data)).catch(() => toast.error('Failed to fetch users'));
+    getAllUsers().then((res) => setUsers(res.data.users || [])).catch(() => toast.error('Failed to fetch users'));
   };
 
   useEffect(() => { fetchUsers(); }, []);

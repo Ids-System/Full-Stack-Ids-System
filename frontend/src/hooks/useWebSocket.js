@@ -1,28 +1,34 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { WS_BASE_URL } from '../api/axios';
 
-const WS_URL = 'ws://localhost:8000/ws/';
-
-export function useWebSocket(onMessage) {
+/**
+ * @param {function} onMessage  - called with parsed JSON data on each message
+ * @param {function} onStatus   - called with (true/false) when WS connects/disconnects
+ */
+export function useWebSocket(onMessage, onStatus) {
   const ws = useRef(null);
   const reconnectTimer = useRef(null);
   const onMessageRef = useRef(onMessage);
+  const onStatusRef = useRef(onStatus);
 
-  useEffect(() => {
-    onMessageRef.current = onMessage;
-  }, [onMessage]);
+  useEffect(() => { onMessageRef.current = onMessage; }, [onMessage]);
+  useEffect(() => { onStatusRef.current = onStatus; }, [onStatus]);
 
   const connect = useCallback(() => {
-    if (ws.current?.readyState === WebSocket.OPEN) return;
+    // Don't reconnect if already open or connecting
+    if (
+      ws.current?.readyState === WebSocket.OPEN ||
+      ws.current?.readyState === WebSocket.CONNECTING
+    ) return;
 
-    const socket = new WebSocket(WS_URL);
+    const socket = new WebSocket(`${WS_BASE_URL}/ws/`);
     ws.current = socket;
 
     socket.onopen = () => {
       console.log('[WS] Connected');
-      if (reconnectTimer.current) {
-        clearTimeout(reconnectTimer.current);
-        reconnectTimer.current = null;
-      }
+      clearTimeout(reconnectTimer.current);
+      reconnectTimer.current = null;
+      onStatusRef.current?.(true);
     };
 
     socket.onmessage = (evt) => {
@@ -36,6 +42,7 @@ export function useWebSocket(onMessage) {
 
     socket.onclose = () => {
       console.log('[WS] Disconnected — reconnecting in 3s');
+      onStatusRef.current?.(false);
       reconnectTimer.current = setTimeout(connect, 3000);
     };
 

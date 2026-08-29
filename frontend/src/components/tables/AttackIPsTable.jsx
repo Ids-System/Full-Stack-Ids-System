@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 
@@ -50,7 +49,7 @@ export default function AttackIPsTable({ data }) {
                   <td><span className="badge badge-proto">{ip.protocol}</span></td>
                   <td className="td-mono">{ip.port}</td>
                   <td className="td-muted">
-                    {ip.timestamp ? format(new Date(ip.timestamp), 'MMM d, HH:mm:ss') : '—'}
+                    {ip.timestamp ? new Date(ip.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '—'}
                   </td>
                 </tr>
               ))

@@ -10,7 +10,7 @@ export default function AttackIPsPage() {
 
   useEffect(() => {
     getAttackIPs()
-      .then((res) => setData(res.data))
+      .then((res) => setData(res.data.data || []))
       .catch(() => toast.error('Failed to load attack IPs'))
       .finally(() => setLoading(false));
   }, []);

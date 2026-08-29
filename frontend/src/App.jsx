@@ -2,12 +2,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, PublicRoute } from './components/ui/RouteGuards';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AttackIPsPage from './pages/AttackIPs';
 import AttacksHistory from './pages/AttacksHistory';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
+
 
 export default function App() {
   return (

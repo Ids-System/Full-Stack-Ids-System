@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/layout/Layout';
 import { getAttacks } from '../api/endpoints';
 import toast from 'react-hot-toast';
-import { format } from 'date-fns';
 import { Search } from 'lucide-react';
 
 export default function AttacksHistory() {
@@ -12,7 +11,7 @@ export default function AttacksHistory() {
 
   useEffect(() => {
     getAttacks()
-      .then((res) => setData(res.data))
+      .then((res) => setData(res.data.data || []))
       .catch(() => toast.error('Failed to load attacks'))
       .finally(() => setLoading(false));
   }, []);
@@ -61,7 +60,7 @@ export default function AttacksHistory() {
                       <td><span className="badge badge-attack">{atk.attack}</span></td>
                       <td className="td-desc">{atk.description}</td>
                       <td className="td-muted">
-                        {atk.date ? format(new Date(atk.date), 'MMM d, yyyy') : '—'}
+                        {atk.date ? new Date(String(atk.date).replace(/-/g, '/')).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                       </td>
                     </tr>
                   ))

@@ -6,12 +6,14 @@ import AttackTypeDonut from '../components/charts/AttackTypeDonut';
 import AlertsTable from '../components/tables/AlertsTable';
 import BlockedIPsTable from '../components/tables/BlockedIPsTable';
 import LiveFeed from '../components/ui/LiveFeed';
+import ErrorBoundary from '../components/ui/ErrorBoundary';
 import { useWebSocket } from '../hooks/useWebSocket';
 import {
   getAttackIPs, getAttacks, getAlerts, getBlockedIPs, getStatistics,
 } from '../api/endpoints';
 import toast from 'react-hot-toast';
 import { Swords, Globe, ShieldX, Bell } from 'lucide-react';
+
 
 export default function Dashboard() {
   const [attackIPs, setAttackIPs] = useState([]);
@@ -27,11 +29,11 @@ export default function Dashboard() {
       const [ips, atk, alr, blk, stat] = await Promise.all([
         getAttackIPs(), getAttacks(), getAlerts(), getBlockedIPs(), getStatistics(),
       ]);
-      setAttackIPs(ips.data);
-      setAttacks(atk.data);
-      setAlerts(alr.data);
-      setBlockedIPs(blk.data);
-      setStatistics(stat.data);
+      setAttackIPs(ips.data.data || []);
+      setAttacks(atk.data.data || []);
+      setAlerts(alr.data.data || []);
+      setBlockedIPs(blk.data.data || []);
+      setStatistics(stat.data.data || []);
     } catch {
       toast.error('Failed to load dashboard data');
     }
@@ -63,13 +65,32 @@ export default function Dashboard() {
           timestamp: latestIP.timestamp,
         };
         setLiveEvents((prev) => [...prev.slice(-99), event]);
-        toast.error(`🚨 ${latestAtk.attack} from ${latestIP.source_ip}`, { duration: 4000 });
+
+        // 🚨 Attack alert toast
+        toast(
+          `🚨 ${latestAtk.attack}\n${latestIP.source_ip} → ${latestIP.destination_ip}`,
+          {
+            duration: 5000,
+            style: {
+              background: '#1a0a0a',
+              color: '#ef4444',
+              border: '1px solid rgba(239,68,68,0.4)',
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '12px',
+              maxWidth: '340px',
+            },
+            icon: '🚨',
+          }
+        );
       }
-      setWsConnected(true);
     }
   }, []);
 
-  useWebSocket(handleWsMessage);
+  const handleWsStatus = useCallback((connected) => {
+    setWsConnected(connected);
+  }, []);
+
+  useWebSocket(handleWsMessage, handleWsStatus);
 
   return (
     <Layout wsConnected={wsConnected} title="Dashboard">
@@ -83,17 +104,27 @@ export default function Dashboard() {
 
       {/* Charts */}
       <div className="charts-grid">
-        <AttacksLineChart data={statistics} />
-        <AttackTypeDonut data={attacks} />
+        <ErrorBoundary label="Attacks Line Chart">
+          <AttacksLineChart data={statistics} />
+        </ErrorBoundary>
+        <ErrorBoundary label="Attack Type Donut">
+          <AttackTypeDonut data={attacks} />
+        </ErrorBoundary>
       </div>
 
       {/* Live Feed */}
-      <LiveFeed events={liveEvents} />
+      <ErrorBoundary label="Live Feed">
+        <LiveFeed events={liveEvents} />
+      </ErrorBoundary>
 
       {/* Tables */}
       <div className="tables-grid">
-        <AlertsTable data={alerts} />
-        <BlockedIPsTable data={blockedIPs} />
+        <ErrorBoundary label="Alerts Table">
+          <AlertsTable data={alerts} />
+        </ErrorBoundary>
+        <ErrorBoundary label="Blocked IPs Table">
+          <BlockedIPsTable data={blockedIPs} />
+        </ErrorBoundary>
       </div>
     </Layout>
   );

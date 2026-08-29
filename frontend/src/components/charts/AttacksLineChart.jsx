@@ -1,8 +1,21 @@
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Area, AreaChart,
+  Tooltip,
+  ResponsiveContainer, Area, AreaChart, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
-import { format } from 'date-fns';
+
+// Safely parse YYYY-MM-DD or ISO strings without timezone-shift issues
+function parseDate(dateStr) {
+  if (!dateStr) return null;
+  // "2026-08-29" → treat as local date by replacing - with /
+  const d = new Date(String(dateStr).replace(/-/g, '/'));
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function fmtDate(dateStr) {
+  const d = parseDate(dateStr);
+  if (!d) return '—';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
@@ -18,8 +31,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function AttacksLineChart({ data }) {
   const chartData = (data || []).map((d) => ({
-    date: d.date ? format(new Date(d.date), 'MMM d') : '—',
-    attacks: d.no_of_attacks,
+    date: fmtDate(d.date),
+    attacks: d.no_of_attacks ?? 0,
   }));
 
   return (

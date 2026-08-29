@@ -1,4 +1,8 @@
-import { format } from 'date-fns';
+function fmtDate(str) {
+  if (!str) return '—';
+  const d = new Date(String(str).replace(/-/g, '/'));
+  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 
 export default function BlockedIPsTable({ data }) {
   return (
@@ -24,7 +28,7 @@ export default function BlockedIPsTable({ data }) {
                   <td className="td-mono td-highlight">{b.ip}</td>
                   <td>{b.Attack}</td>
                   <td className="td-muted">
-                    {b.Date_of_block ? format(new Date(b.Date_of_block), 'MMM d, yyyy') : '—'}
+                    {fmtDate(b.Date_of_block)}
                   </td>
                 </tr>
               ))

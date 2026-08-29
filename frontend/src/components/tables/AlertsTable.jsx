@@ -1,4 +1,8 @@
-import { format } from 'date-fns';
+function fmtDateTime(str) {
+  if (!str) return '—';
+  const d = new Date(String(str).replace(/-/g, '/'));
+  return isNaN(d.getTime()) ? '—' : d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
 
 const SEVERITY_CLASS = {
   critical: 'badge-critical',
@@ -35,7 +39,7 @@ export default function AlertsTable({ data }) {
                     </span>
                   </td>
                   <td className="td-muted">
-                    {a.timestamp ? format(new Date(a.timestamp), 'MMM d, HH:mm:ss') : '—'}
+                    {fmtDateTime(a.timestamp)}
                   </td>
                 </tr>
               ))

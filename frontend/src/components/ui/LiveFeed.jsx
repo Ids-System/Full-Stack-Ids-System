@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { format } from 'date-fns';
 import { Radio } from 'lucide-react';
 
 export default function LiveFeed({ events }) {
@@ -25,7 +24,7 @@ export default function LiveFeed({ events }) {
           events.map((evt, i) => (
             <div key={i} className="feed-item">
               <span className="feed-time">
-                {format(new Date(evt.timestamp || Date.now()), 'HH:mm:ss')}
+                {new Date(evt.timestamp || Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
               </span>
               <span className={`badge badge-${(evt.severity || '').toLowerCase()}`}>
                 {evt.severity || '—'}
