@@ -9,6 +9,7 @@ def login_service(data):
     is_auser = get_user_by_details(email)
     if is_auser:
         stored_password = is_auser.password
+        print(password)
         is_valid = bcrypt.checkpw(password.encode("utf-8"),stored_password.encode("utf-8"))
         if is_valid:
             user_id = is_auser.id

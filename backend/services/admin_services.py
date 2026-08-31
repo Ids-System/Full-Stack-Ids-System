@@ -25,8 +25,9 @@ def add_new_user(is_admin,data):
     if is_exists:
         raise HTTPException(409,detail="User Already Exists")
     name,email,password = data.name,data.email,data.password
-    hash_password = bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt())
-    res = add_user(name,email,hash_password)
+    hash_password = bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt()).decode("utf-8")
+    print(hash_password)
+    res = add_user(name,hash_password,email)
     if res is None:
         raise HTTPException(500,detail="Internal Server Error")
     return {"message" : f" User '{name}' added sucessfully !"}

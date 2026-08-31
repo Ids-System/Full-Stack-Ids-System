@@ -5,6 +5,7 @@ from routes.admin import admin
 from routes.dashboard import dashboard
 from routes.websockets import ws
 
+
 app = FastAPI()
 app.include_router(users)
 app.include_router(engine)

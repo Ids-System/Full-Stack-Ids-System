@@ -56,7 +56,7 @@ def delete_user(email):
     with SessionLocal() as db:
         user = db.query(User).filter(User.email == email).first()
         if user:
-            db.delete(User)
+            db.delete(user)
             db.commit()
             return True
             
