@@ -9,7 +9,9 @@ const api = axios.create({
 });
 
 // Endpoints that should NEVER trigger a refresh retry
-const AUTH_ENDPOINTS = ['/users/me', '/users/refresh', '/users/login', '/users/logout'];
+// NOTE: /users/me is intentionally excluded — it's a protected resource, not an auth endpoint.
+// A 401 from /users/me should trigger a refresh attempt.
+const AUTH_ENDPOINTS = ['/users/refresh', '/users/login', '/users/logout'];
 
 // Auto-refresh on 401 — only for non-auth endpoints
 api.interceptors.response.use(
