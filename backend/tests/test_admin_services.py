@@ -42,7 +42,7 @@ def test_add_new_users():
          patch("services.admin_services.bcrypt.hashpw") as mock_hash_pw ,\
          patch("services.admin_services.add_user") as mock_add_user :
          mock_get_user_details.return_value = False
-         mock_hash_pw.return_value = "789546546547865d6@^*%$%&@$&"
+         mock_hash_pw.return_value =  b"$2b$12$JQhqOcyYL0tPnFmyPSL60.8GAZW4VxqAqSSP5RWFJFME.9WD.N6bW"
          mock_add_user.return_value = True
 
          result = add_new_user(True,data=NewUser)
@@ -64,7 +64,7 @@ def test_add_new_users_internal_server_error():
          patch("services.admin_services.bcrypt.hashpw") as mock_hash_pw ,\
          patch("services.admin_services.add_user") as mock_add_user :
          mock_get_user_details.return_value = False
-         mock_hash_pw.return_value = "789546546547865d6@^*%$%&@$&"
+         mock_hash_pw.return_value = b"$2b$12$JQhqOcyYL0tPnFmyPSL60.8GAZW4VxqAqSSP5RWFJFME.9WD.N6bW"
          mock_add_user.return_value = None
 
          with pytest.raises(HTTPException) as exc:
