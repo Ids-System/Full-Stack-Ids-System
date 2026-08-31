@@ -25,7 +25,7 @@ BLACKLISTED_IPS = {
 #Invalid TCP Header -> Alert
 
 #RULE 6: Large Packet Size
-LARGE_PACKET_THRESHOLD = 1500
+LARGE_PACKET_THRESHOLD = 8928 #for localhost
 
 #LOGS
 LOG_FILE = "logs/ids_engine.log"
